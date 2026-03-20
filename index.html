@@ -1,795 +1,502 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pomodoro</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twin Towers Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-
     :root {
-      --c: #c9956a;
-      --c-rgb: 201,149,106;
-      --bg: #0d0b09;
-      --bg2: #111009;
-      --surface: rgba(255,255,255,0.03);
-      --surface-border: rgba(255,255,255,0.07);
-      --text: #f2ede6;
-      --text2: rgba(242,237,230,0.55);
-      --muted: #5a5248;
-      --divider: rgba(255,255,255,0.05);
-      --btn-radius: 100px;
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: rgba(255,255,255,0.07);
+      --text: #f0f0f5;
+      --muted: #7a7f9a;
+      --accent: #4f8ef7;
+      --accent2: #7c5cfc;
+      --green: #34d399;
     }
 
-    html.light {
-      --bg: #f5f0e8;
-      --bg2: #ede8df;
-      --surface: rgba(0,0,0,0.04);
-      --surface-border: rgba(0,0,0,0.08);
-      --text: #1a1612;
-      --text2: rgba(26,22,18,0.5);
-      --muted: #9a9088;
-      --divider: rgba(0,0,0,0.06);
-    }
-
-    html { transition: background 0.5s ease; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      min-height: 100vh;
+      font-family: 'Outfit', sans-serif;
       background: var(--bg);
-      font-family: 'Tenor Sans', sans-serif;
       color: var(--text);
-      overflow-x: hidden;
-      position: relative;
-      transition: background 0.5s ease, color 0.5s ease;
-    }
-
-    /* Ambient glow */
-    #ambient {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background:
-        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(var(--c-rgb),0.09) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 70% at 90% 110%, rgba(var(--c-rgb),0.05) 0%, transparent 60%);
-      transition: background 0.8s ease;
-    }
-    html.light #ambient {
-      background:
-        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(var(--c-rgb),0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 70% at 90% 110%, rgba(var(--c-rgb),0.06) 0%, transparent 60%);
-    }
-
-    /* Noise */
-    #noise {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.35;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      background-size: 180px;
-    }
-
-    /* ── Slider wrapper ── */
-    #slider-track {
-      display: flex;
-      width: 200vw;
       min-height: 100vh;
-      transition: transform 0.7s cubic-bezier(0.77,0,0.175,1);
-      position: relative; z-index: 1;
-    }
-    #slider-track.show-bonsai { transform: translateX(-100vw); }
-
-    .slide {
-      width: 100vw;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      flex-shrink: 0;
     }
 
-    /* ── Theme toggle ── */
-    #theme-btn {
-      position: fixed; top: 1.4rem; right: 1.4rem; z-index: 100;
-      background: var(--surface); border: 1px solid var(--surface-border);
-      color: var(--text2); width: 36px; height: 36px; border-radius: 50%;
-      cursor: pointer; font-size: 0.9rem;
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,17,23,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center;
+      height: 60px; padding: 0 24px; gap: 6px;
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; cursor: pointer;
+      margin-right: 20px; flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 18px; font-weight: 700; color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+    nav::-webkit-scrollbar { display: none; }
+
+    nav a {
+      text-decoration: none; color: var(--muted);
+      font-size: 13.5px; font-weight: 500;
+      padding: 6px 13px; border-radius: 8px;
+      white-space: nowrap; cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    nav a:hover { background: var(--surface2); color: var(--text); }
+    nav a.active { background: var(--accent); color: #fff; }
+
+    .page { display: none; animation: fadeIn 0.25s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .hero {
+      background: linear-gradient(135deg, #141829 0%, #1a1d35 50%, #111420 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 24px 56px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(79,142,247,0.12), transparent);
+      pointer-events: none;
+    }
+
+    .hero-towers {
+      display: flex; justify-content: center;
+      margin-bottom: 32px; position: relative; z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700; letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff 30%, #7aa8ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px; position: relative; z-index: 1;
+    }
+
+    .hero p {
+      color: var(--muted); font-size: 15px; max-width: 480px;
+      margin: 0 auto; line-height: 1.6; position: relative; z-index: 1;
+    }
+
+    .countdown-wrap {
+      max-width: 1100px; margin: -28px auto 0;
+      padding: 0 24px; position: relative; z-index: 10;
+    }
+
+    .countdown-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .countdown-label {
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .countdown-name {
+      font-size: 20px; font-weight: 700; color: var(--text);
+    }
+
+    .countdown-units { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .unit {
+      text-align: center;
+      background: var(--surface2);
+      border-radius: 14px;
+      padding: 14px 18px;
+      min-width: 72px;
+    }
+
+    .unit-num {
+      font-size: 28px; font-weight: 700; color: var(--accent);
+      line-height: 1; font-variant-numeric: tabular-nums;
+    }
+
+    .unit-label {
+      font-size: 11px; color: var(--muted); margin-top: 4px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .content {
+      max-width: 1100px; margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .section-title {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1.2px;
+      margin-bottom: 16px;
+    }
+
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+
+    .link-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-decoration: none;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s, background 0.15s;
+      display: flex; flex-direction: column; gap: 12px;
+      min-height: 130px;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .link-card:active {
+      transform: scale(0.96);
+      border-color: rgba(79,142,247,0.5);
+      background: var(--surface2);
+    }
+
+    .link-card:hover {
+      border-color: rgba(79,142,247,0.4);
+      background: var(--surface2);
+    }
+
+    .card-icon { font-size: 28px; line-height: 1; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    .subpage-header { margin-bottom: 32px; }
+    .subpage-header h1 { font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
+    .subpage-header p { font-size: 14px; color: var(--muted); }
+
+    .embed-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      min-height: 220px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; color: var(--muted); font-size: 14px; text-align: center;
+      padding: 48px;
+    }
+    .embed-box a { color: var(--accent); font-size: 13px; text-decoration: none; }
+    .embed-box a:hover { text-decoration: underline; }
+
+    .sheets-card {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 22px;
+      text-decoration: none; color: var(--text);
+      font-size: 15px; font-weight: 500;
+      transition: border-color 0.18s, transform 0.18s;
+    }
+    .sheets-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    .steps { list-style: none; counter-reset: s; margin-top: 16px; }
+    .steps li {
+      counter-increment: s; display: flex; gap: 16px;
+      margin-bottom: 20px; font-size: 15px; color: #c0c4d8; line-height: 1.65;
+      align-items: flex-start;
+    }
+    .steps li::before {
+      content: counter(s); background: var(--accent); color: #fff;
+      min-width: 28px; height: 28px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(12px);
-      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+      font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
     }
-    #theme-btn:hover { color: var(--text); border-color: rgba(var(--c-rgb),0.3); transform: scale(1.1); }
+    .steps-section { margin-bottom: 32px; }
+    .steps-label { font-size: 14px; font-weight: 600; color: var(--text); display: block; margin-bottom: 10px; }
 
-    /* ── Swipe hint ── */
-    #swipe-hint {
-      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100;
-      font-size: 0.55rem; letter-spacing: 0.2em; color: var(--muted);
-      text-transform: uppercase; opacity: 0.7;
-      display: flex; align-items: center; gap: 0.4rem;
-      animation: hintFloat 3s ease-in-out infinite;
-    }
-    @keyframes hintFloat { 0%,100%{transform:translateX(0);} 50%{transform:translateX(4px);} }
-    #swipe-hint::after { content:'→'; font-size: 0.8rem; }
+    .byline { font-size: 12px; color: var(--muted); margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); }
 
-    /* ── Timer app ── */
-    .app { width: 100%; max-width: 420px; }
-    .app > * { animation: slideUp 0.9s cubic-bezier(0.16,1,0.3,1) both; }
-    .app > *:nth-child(1) { animation-delay: 0s; }
-    .app > *:nth-child(2) { animation-delay: 0.07s; }
-    .app > *:nth-child(3) { animation-delay: 0.14s; }
-    .app > *:nth-child(4) { animation-delay: 0.21s; }
-    .app > *:nth-child(5) { animation-delay: 0.28s; }
-    .app > *:nth-child(6) { animation-delay: 0.35s; }
-    .app > *:nth-child(7) { animation-delay: 0.4s; }
-    .app > *:nth-child(8) { animation-delay: 0.45s; }
+    footer { text-align: center; font-size: 12px; color: var(--muted); padding: 24px; border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); margin: 0 8px; text-decoration: none; }
+    footer a:hover { color: var(--text); }
 
-    @keyframes slideUp {
-      from { opacity:0; transform:translateY(22px); }
-      to   { opacity:1; transform:translateY(0); }
+    @media (max-width: 600px) {
+      .countdown-card { flex-direction: column; }
+      .unit { min-width: 60px; padding: 12px 14px; }
+      .unit-num { font-size: 22px; }
     }
-
-    .header { text-align:center; margin-bottom:2.8rem; }
-    .eyebrow {
-      font-size:0.58rem; letter-spacing:0.38em; color:var(--muted);
-      text-transform:uppercase; margin-bottom:0.5rem;
-      display:flex; align-items:center; justify-content:center; gap:0.8rem;
-      transition: color 0.4s;
-    }
-    .eyebrow::before,.eyebrow::after {
-      content:''; width:22px; height:1px;
-      background:linear-gradient(90deg,transparent,var(--muted));
-      transition: background 0.4s;
-    }
-    .eyebrow::after { transform:scaleX(-1); }
-    #mode-title {
-      font-family:'Cormorant Garamond',serif;
-      font-size:3rem; font-weight:300; letter-spacing:0.08em;
-      color:var(--c); line-height:1;
-      transition: color 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
-    }
-
-    /* Mode pills */
-    .modes {
-      display:flex; gap:0.3rem; justify-content:center;
-      margin-bottom:2.8rem;
-      background:var(--surface); border:1px solid var(--surface-border);
-      border-radius:100px; padding:0.28rem;
-      backdrop-filter:blur(12px);
-      transition: background 0.4s, border-color 0.4s;
-    }
-    .mode-btn {
-      background:transparent; border:none; color:var(--muted);
-      padding:0.42rem 1.05rem; cursor:pointer;
-      font-family:'Tenor Sans',sans-serif;
-      font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
-      border-radius:100px;
-      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-    .mode-btn:hover { color:var(--text); }
-    .mode-btn.active {
-      background:rgba(var(--c-rgb),0.13); color:var(--c);
-      box-shadow:inset 0 0 0 1px rgba(var(--c-rgb),0.28);
-    }
-
-    /* Ring */
-    .ring-wrap { display:flex; justify-content:center; margin-bottom:2.8rem; }
-    .ring-container { position:relative; width:280px; height:280px; }
-    #ring-svg { transform:rotate(-90deg); will-change:transform; }
-    #ring-track { fill:none; stroke:rgba(var(--c-rgb),0.06); stroke-width:1; }
-    #ring-dashes {
-      fill:none; stroke:rgba(var(--c-rgb),0.1); stroke-width:0.8; stroke-dasharray:2 20;
-      animation:rotateDashes 40s linear infinite;
-      transform-origin:140px 140px;
-    }
-    @keyframes rotateDashes { to { transform:rotate(360deg); } }
-    #ring-glow {
-      fill:none; stroke:var(--c); stroke-width:12; stroke-linecap:round;
-      filter:blur(10px); opacity:0.22;
-      transition: stroke-dashoffset 1.1s cubic-bezier(0.25,0.46,0.45,0.94), stroke 0.6s, opacity 0.5s;
-    }
-    #ring-progress {
-      fill:none; stroke:var(--c); stroke-width:1.5; stroke-linecap:round;
-      transition: stroke-dashoffset 1.1s cubic-bezier(0.25,0.46,0.45,0.94), stroke 0.6s;
-    }
-    .ring-container.running #ring-glow { animation:pulseGlow 3s ease-in-out infinite; }
-    @keyframes pulseGlow { 0%,100%{opacity:0.15;} 50%{opacity:0.38;} }
-
-    .ring-inner {
-      position:absolute; inset:0;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-    }
-    #time-display {
-      font-family:'Cormorant Garamond',serif;
-      font-size:5.8rem; font-weight:300; letter-spacing:-0.01em;
-      color:var(--text); line-height:1;
-      text-shadow:0 0 80px rgba(var(--c-rgb),0.15);
-      transition: color 0.5s ease, text-shadow 0.5s ease;
-    }
-    #session-count { font-size:0.56rem; letter-spacing:0.24em; color:var(--muted); text-transform:uppercase; margin-top:0.3rem; transition:color 0.4s; }
-
-    /* Controls */
-    .controls { display:flex; gap:0.9rem; justify-content:center; margin-bottom:3.2rem; }
-
-    .reset-btn {
-      background:var(--surface); border:1px solid var(--surface-border); color:var(--muted);
-      padding:0.78rem 1.5rem;
-      font-family:'Tenor Sans',sans-serif; font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase;
-      cursor:pointer; border-radius:var(--btn-radius); backdrop-filter:blur(12px);
-      transition: all 0.35s cubic-bezier(0.16,1,0.3,1), border-radius 0s;
-    }
-    .reset-btn:hover { border-color:rgba(var(--c-rgb),0.2); color:var(--text); transform:translateY(-1px); }
-    .reset-btn:active { transform:scale(0.97); }
-
-    .start-btn {
-      background:linear-gradient(145deg, rgba(var(--c-rgb),0.9), rgba(var(--c-rgb),0.62));
-      border:1px solid rgba(var(--c-rgb),0.45); color:#0d0b09;
-      padding:0.78rem 3rem;
-      font-family:'Tenor Sans',sans-serif; font-size:0.6rem; letter-spacing:0.26em; text-transform:uppercase;
-      cursor:pointer; border-radius:var(--btn-radius);
-      box-shadow: 0 4px 30px rgba(var(--c-rgb),0.2), inset 0 1px 0 rgba(255,255,255,0.14);
-      transition: all 0.45s cubic-bezier(0.16,1,0.3,1);
-      position:relative; overflow:hidden;
-    }
-    .start-btn::before {
-      content:''; position:absolute; inset:0;
-      background:linear-gradient(145deg,rgba(255,255,255,0.13),transparent);
-      transition: opacity 0.3s;
-    }
-    .start-btn:hover { transform:translateY(-2px); box-shadow:0 8px 40px rgba(var(--c-rgb),0.32), inset 0 1px 0 rgba(255,255,255,0.16); }
-    .start-btn:active { transform:scale(0.97); }
-
-    /* Divider */
-    .divider { display:flex; align-items:center; gap:1rem; margin-bottom:1.4rem; }
-    .divider-line { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--divider),transparent); transition:background 0.4s; }
-    .divider-label { font-size:0.52rem; letter-spacing:0.32em; color:var(--muted); text-transform:uppercase; }
-
-    /* Task input */
-    .task-input-row { display:flex; gap:0.55rem; margin-bottom:0.9rem; }
-    .task-input {
-      flex:1; background:var(--surface); border:1px solid var(--surface-border);
-      border-radius:100px; color:var(--text); padding:0.62rem 1.15rem;
-      font-family:'Tenor Sans',sans-serif; font-size:0.73rem; letter-spacing:0.04em;
-      outline:none; backdrop-filter:blur(12px);
-      transition: border-color 0.3s, box-shadow 0.3s, background 0.4s;
-    }
-    .task-input:focus { border-color:rgba(var(--c-rgb),0.4); box-shadow:0 0 0 3px rgba(var(--c-rgb),0.07); }
-    .task-input::placeholder { color:var(--muted); }
-    .add-btn {
-      background:rgba(var(--c-rgb),0.13); border:1px solid rgba(var(--c-rgb),0.22);
-      color:var(--c); width:37px; height:37px; border-radius:50%; cursor:pointer;
-      font-size:1.25rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;
-      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .add-btn:hover { background:rgba(var(--c-rgb),0.23); transform:scale(1.1) rotate(90deg); }
-    .add-btn:active { transform:scale(0.94) rotate(90deg); }
-
-    #task-list { list-style:none; }
-    .empty-tasks {
-      text-align:center; color:var(--muted); font-size:0.7rem;
-      letter-spacing:0.12em; padding:1.8rem 0;
-      font-style:italic; font-family:'Cormorant Garamond',serif;
-    }
-    .task-item {
-      display:flex; align-items:center; gap:0.7rem;
-      padding:0.7rem 0.2rem;
-      border-bottom:1px solid var(--divider);
-      animation: taskIn 0.38s cubic-bezier(0.16,1,0.3,1) both;
-      transition: opacity 0.25s, transform 0.25s;
-    }
-    @keyframes taskIn { from{opacity:0;transform:translateX(-8px);} to{opacity:1;transform:translateX(0);} }
-    .task-item:hover .del-btn { opacity:1; }
-
-    .task-check {
-      width:17px; height:17px; border:1px solid var(--muted);
-      border-radius:50%; cursor:pointer; flex-shrink:0;
-      display:flex; align-items:center; justify-content:center;
-      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-      position:relative;
-    }
-    .task-check::after {
-      content:''; width:7px; height:7px; border-radius:50%;
-      background:var(--c); opacity:0; transform:scale(0);
-      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .task-check.checked { border-color:var(--c); box-shadow:0 0 10px rgba(var(--c-rgb),0.3); }
-    .task-check.checked::after { opacity:1; transform:scale(1); }
-    .task-text { font-size:0.76rem; color:var(--text2); flex:1; letter-spacing:0.04em; transition:all 0.3s; }
-    .task-text.done { text-decoration:line-through; color:var(--muted); }
-    .del-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; opacity:0; transition:all 0.2s; padding:0 0.2rem; line-height:1; }
-    .del-btn:hover { color:var(--text); }
-
-    #session-dots { display:flex; gap:0.45rem; justify-content:center; margin-top:2.2rem; min-height:8px; }
-    .session-dot {
-      width:5px; height:5px; border-radius:50%; background:rgba(var(--c-rgb),0.5);
-      animation: dotPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    @keyframes dotPop { from{opacity:0;transform:scale(0);} to{opacity:1;transform:scale(1);} }
-
-    /* ────────────────────────────────────
-       BONSAI SLIDE
-    ──────────────────────────────────── */
-    .bonsai-slide {
-      flex-direction:column;
-      gap:0;
-    }
-    .bonsai-back-btn {
-      position:fixed; top:1.4rem; left:1.4rem; z-index:100;
-      background:var(--surface); border:1px solid var(--surface-border);
-      color:var(--text2); padding:0.4rem 0.9rem;
-      border-radius:100px; cursor:pointer;
-      font-family:'Tenor Sans',sans-serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
-      backdrop-filter:blur(12px);
-      transition: all 0.3s;
-      opacity:0; pointer-events:none;
-    }
-    .bonsai-back-btn:hover { color:var(--text); border-color:rgba(var(--c-rgb),0.3); }
-    #slider-track.show-bonsai .bonsai-back-btn { opacity:1; pointer-events:auto; }
-
-    .bonsai-container { width:100%; max-width:440px; text-align:center; }
-    .bonsai-header { margin-bottom:1.5rem; }
-    .bonsai-title {
-      font-family:'Cormorant Garamond',serif;
-      font-size:2.2rem; font-weight:300; letter-spacing:0.1em; color:var(--c);
-    }
-    .bonsai-subtitle { font-size:0.58rem; letter-spacing:0.28em; color:var(--muted); text-transform:uppercase; margin-top:0.3rem; }
-
-    #bonsai-canvas {
-      width:100%; max-width:380px; height:340px;
-      margin:0 auto; display:block;
-    }
-
-    .bonsai-stats {
-      display:flex; gap:2rem; justify-content:center; margin-top:1.5rem;
-    }
-    .bonsai-stat { text-align:center; }
-    .bonsai-stat-val {
-      font-family:'Cormorant Garamond',serif;
-      font-size:2rem; font-weight:300; color:var(--c);
-    }
-    .bonsai-stat-label { font-size:0.55rem; letter-spacing:0.22em; color:var(--muted); text-transform:uppercase; margin-top:0.1rem; }
-
-    .bonsai-stage {
-      font-size:0.62rem; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase;
-      margin-top:1.2rem; display:flex; align-items:center; justify-content:center; gap:0.5rem;
-    }
-    .stage-dot { width:5px; height:5px; border-radius:50%; background:var(--c); display:inline-block; }
   </style>
 </head>
 <body>
-<div id="ambient"></div>
-<div id="noise"></div>
 
-<button id="theme-btn" title="Theme wechseln">☀</button>
-<div id="swipe-hint">Bonsai</div>
-<button class="bonsai-back-btn" id="back-btn">← Zurück</button>
+<header>
+  <div class="header-inner">
+    <a class="logo" onclick="showPage('home')">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#1a1d35"/>
+        <rect x="3" y="10" width="11" height="19" rx="1" fill="#4f8ef7" opacity="0.9"/>
+        <rect x="7.5" y="5" width="2" height="6" rx="1" fill="#7aabff"/>
+        <rect x="5" y="13" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="9" y="13" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="5" y="17" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="9" y="17" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="5" y="21" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="9" y="21" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="18" y="13" width="11" height="16" rx="1" fill="#7c5cfc" opacity="0.9"/>
+        <rect x="22.5" y="8" width="2" height="6" rx="1" fill="#a98bff"/>
+        <rect x="20" y="16" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="25" y="16" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="20" y="20" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="25" y="20" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="20" y="24" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="25" y="24" width="3" height="2" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+        <rect x="0" y="29" width="32" height="3" rx="0 0 8 8" fill="#2a2e45"/>
+      </svg>
+      <span class="logo-text">Twin Towers Hub</span>
+    </a>
+    <nav>
+      <a class="active" id="nav-home"        onclick="showPage('home')">Startseite</a>
+      <a id="nav-pruefung"                   onclick="showPage('pruefung')">Prüfungen</a>
+      <a id="nav-stundenplan"                onclick="showPage('stundenplan')">Stundenplan</a>
+      <a href="https://intranet.tam.ch/kzo" target="_blank">Intranet</a>
+      <a href="https://sv-gastronomie.ch/menu/KZO,%20Wetzikon/Mittagsmen%C3%BC" target="_blank">Mensa</a>
+      <a href="https://www.steiner-beck.ch/take-away-menues/" target="_blank">Steiner</a>
+      <a id="nav-howto"                      onclick="showPage('howto')">Auf Homescreen</a>
+    </nav>
+  </div>
+</header>
 
-<div id="slider-track">
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-towers">
+      <svg width="160" height="170" viewBox="0 0 160 170" fill="none">
+        <ellipse cx="80" cy="90" rx="70" ry="60" fill="rgba(79,142,247,0.06)"/>
+        <rect x="10" y="45" width="52" height="115" rx="2" fill="rgba(79,142,247,0.2)" stroke="rgba(79,142,247,0.5)" stroke-width="1"/>
+        <rect x="33" y="14" width="7" height="33" rx="2" fill="rgba(122,171,255,0.8)"/>
+        <rect x="17" y="56" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="33" y="56" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="49" y="56" width="7" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="17" y="70" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="33" y="70" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="49" y="70" width="7" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="17" y="84" width="10" height="7" rx="1" fill="rgba(255,255,255,0.2)"/>
+        <rect x="33" y="84" width="10" height="7" rx="1" fill="rgba(255,255,255,0.2)"/>
+        <rect x="49" y="84" width="7" height="7" rx="1" fill="rgba(255,255,255,0.2)"/>
+        <rect x="17" y="98" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="33" y="98" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="49" y="98" width="7" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="17" y="112" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="33" y="112" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="49" y="112" width="7" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="17" y="126" width="10" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="33" y="126" width="10" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="49" y="126" width="7" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="17" y="140" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="33" y="140" width="10" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="49" y="140" width="7" height="7" rx="1" fill="rgba(79,142,247,0.35)"/>
+        <rect x="98" y="58" width="52" height="102" rx="2" fill="rgba(124,92,252,0.2)" stroke="rgba(124,92,252,0.5)" stroke-width="1"/>
+        <rect x="121" y="27" width="7" height="33" rx="2" fill="rgba(169,139,255,0.8)"/>
+        <rect x="105" y="69" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="121" y="69" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="137" y="69" width="7" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="105" y="83" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="121" y="83" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="137" y="83" width="7" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="105" y="97" width="10" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="121" y="97" width="10" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="137" y="97" width="7" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="105" y="111" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="121" y="111" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="137" y="111" width="7" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="105" y="125" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="121" y="125" width="10" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="137" y="125" width="7" height="7" rx="1" fill="rgba(124,92,252,0.4)"/>
+        <rect x="105" y="139" width="10" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="121" y="139" width="10" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="137" y="139" width="7" height="7" rx="1" fill="rgba(255,255,255,0.18)"/>
+        <rect x="0" y="160" width="160" height="10" rx="3" fill="rgba(255,255,255,0.05)"/>
+      </svg>
+    </div>
+    <h1>Twin Towers Hub</h1>
+    <p>Dein Gymi-Cockpit. Stundenplan, Prüfungen, Mensa – alles auf einen Blick.</p>
+  </div>
 
-  <!-- SLIDE 1: Timer -->
-  <div class="slide">
-    <div class="app">
-      <div class="header">
-        <div class="eyebrow">Pomodoro</div>
-        <div id="mode-title">Fokus</div>
+  <div class="countdown-wrap">
+    <div class="countdown-card">
+      <div>
+        <div class="countdown-label">🏖️ Countdown</div>
+        <div class="countdown-name">Frühlingsferien 2026</div>
       </div>
-
-      <div class="modes">
-        <button class="mode-btn active" data-mode="focus">Fokus</button>
-        <button class="mode-btn" data-mode="short">Kurze Pause</button>
-        <button class="mode-btn" data-mode="long">Lange Pause</button>
+      <div class="countdown-units">
+        <div class="unit"><div class="unit-num" id="cd-days">--</div><div class="unit-label">Tage</div></div>
+        <div class="unit"><div class="unit-num" id="cd-hours">--</div><div class="unit-label">Std</div></div>
+        <div class="unit"><div class="unit-num" id="cd-mins">--</div><div class="unit-label">Min</div></div>
+        <div class="unit"><div class="unit-num" id="cd-secs">--</div><div class="unit-label">Sek</div></div>
       </div>
-
-      <div class="ring-wrap">
-        <div class="ring-container" id="ring-container">
-          <svg id="ring-svg" width="280" height="280">
-            <circle id="ring-dashes"   cx="140" cy="140" r="120"/>
-            <circle id="ring-track"    cx="140" cy="140" r="120"/>
-            <circle id="ring-glow"     cx="140" cy="140" r="120"/>
-            <circle id="ring-progress" cx="140" cy="140" r="120"/>
-          </svg>
-          <div class="ring-inner">
-            <div id="time-display">25:00</div>
-            <div id="session-count">0 sessions</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="controls">
-        <button class="reset-btn" id="reset-btn">Reset</button>
-        <button class="start-btn" id="start-btn">Start</button>
-      </div>
-
-      <div class="divider">
-        <div class="divider-line"></div>
-        <span class="divider-label">Aufgaben</span>
-        <div class="divider-line"></div>
-      </div>
-
-      <div class="task-input-row">
-        <input class="task-input" id="task-input" type="text" placeholder="Neue Aufgabe…"/>
-        <button class="add-btn" id="add-btn">+</button>
-      </div>
-
-      <ul id="task-list"><li class="empty-tasks">— noch keine Aufgaben —</li></ul>
-      <div id="session-dots"></div>
     </div>
   </div>
 
-  <!-- SLIDE 2: Bonsai -->
-  <div class="slide bonsai-slide">
-    <div class="bonsai-container">
-      <div class="bonsai-header">
-        <div class="bonsai-title">Dein Bonsai</div>
-        <div class="bonsai-subtitle">Wächst mit deiner Fokuszeit</div>
-      </div>
-      <canvas id="bonsai-canvas"></canvas>
-      <div class="bonsai-stats">
-        <div class="bonsai-stat">
-          <div class="bonsai-stat-val" id="stat-sessions">0</div>
-          <div class="bonsai-stat-label">Sessions</div>
-        </div>
-        <div class="bonsai-stat">
-          <div class="bonsai-stat-val" id="stat-minutes">0</div>
-          <div class="bonsai-stat-label">Minuten</div>
-        </div>
-      </div>
-      <div class="bonsai-stage">
-        <span class="stage-dot"></span>
-        <span id="stage-label">Samenkorn</span>
-        <span class="stage-dot"></span>
-      </div>
+  <div class="content">
+    <div class="section-title">Schnellzugriff</div>
+    <div class="links-grid">
+      <a class="link-card" onclick="showPage('pruefung')">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Prüfungstermintabelle</div>
+        <div class="card-desc">Alle Prüfungsdaten auf einen Blick</div>
+      </a>
+      <a class="link-card" onclick="showPage('stundenplan')">
+        <div class="card-icon">🗓️</div>
+        <div class="card-title">Stundenplan U2a</div>
+        <div class="card-desc">Stundenplan Frühlingssemester 2026</div>
+      </a>
+      <a class="link-card" href="https://intranet.tam.ch/kzo" target="_blank">
+        <div class="card-icon">🔒</div>
+        <div class="card-title">Intranet KZO</div>
+        <div class="card-desc">Schulinternes Portal</div>
+      </a>
+      <a class="link-card" href="https://sv-gastronomie.ch/menu/KZO,%20Wetzikon/Mittagsmen%C3%BC" target="_blank">
+        <div class="card-icon">🍽️</div>
+        <div class="card-title">Mensaplan</div>
+        <div class="card-desc">SV Gastronomie – Wochenmenü</div>
+      </a>
+      <a class="link-card" href="https://www.steiner-beck.ch/take-away-menues/" target="_blank">
+        <div class="card-icon">🥪</div>
+        <div class="card-title">Steiner Menü</div>
+        <div class="card-desc">Take-Away Menüs Steiner-Beck</div>
+      </a>
+      <a class="link-card" onclick="showPage('howto')">
+        <div class="card-icon">📲</div>
+        <div class="card-title">Auf Homescreen</div>
+        <div class="card-desc">Als App auf dem Handy speichern</div>
+      </a>
     </div>
+    <p class="byline">Made by Kilian Disch U2a</p>
   </div>
-
 </div>
 
+<div class="page" id="page-pruefung">
+  <div class="content">
+    <div class="subpage-header">
+      <h1>Prüfungstermintabelle</h1>
+      <p>Alle Prüfungsdaten der Klasse U2a</p>
+    </div>
+    <div class="embed-box">
+      <span style="font-size:36px">📋</span>
+      <span>Die Prüfungstermintabelle ist auf der originalen KZO-Hub Seite eingebettet.</span>
+      <a href="https://sites.google.com/view/kzo-hub/pr%C3%BCfungstermintabelle" target="_blank">→ Zum Original öffnen</a>
+    </div>
+    <p class="byline">Made by Kilian Disch U2a</p>
+  </div>
+</div>
+
+<div class="page" id="page-stundenplan">
+  <div class="content">
+    <div class="subpage-header">
+      <h1>Stundenplan</h1>
+      <p>Klasse U2a – Frühlingssemester 2026</p>
+    </div>
+    <a class="sheets-card" href="https://sites.google.com/view/kzo-hub/stundenplan" target="_blank">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect width="22" height="22" rx="3" fill="#0f9d58"/>
+        <rect x="4" y="6" width="14" height="1.5" fill="white" opacity="0.8"/>
+        <rect x="4" y="9.5" width="14" height="1.5" fill="white" opacity="0.8"/>
+        <rect x="4" y="13" width="14" height="1.5" fill="white" opacity="0.8"/>
+        <rect x="8" y="6" width="1" height="10" fill="white" opacity="0.4"/>
+        <rect x="13" y="6" width="1" height="10" fill="white" opacity="0.4"/>
+      </svg>
+      Stundenplan U2a (FS26) öffnen
+    </a>
+    <p class="byline" style="margin-top:32px;">Made by Kilian Disch U2a</p>
+  </div>
+</div>
+
+<div class="page" id="page-howto">
+  <div class="content">
+    <div class="subpage-header">
+      <h1>Auf den Homescreen hinzufügen</h1>
+      <p>So sparst du dir jedes Mal das Suchen</p>
+    </div>
+    <div class="steps-section">
+      <span class="steps-label">📱 iPhone / iPad (Safari)</span>
+      <ol class="steps">
+        <li>Öffne <strong>Safari</strong> und gehe auf die Twin Towers Hub Seite.</li>
+        <li>Tippe auf das <strong>Teilen-Symbol</strong> (Quadrat mit Pfeil nach oben) unten in der Mitte.</li>
+        <li>Wähle <strong>„Zum Home-Bildschirm"</strong>.</li>
+        <li>Tippe auf <strong>„Hinzufügen"</strong> – fertig! 🎉</li>
+      </ol>
+    </div>
+    <div class="steps-section">
+      <span class="steps-label">🤖 Android (Chrome)</span>
+      <ol class="steps">
+        <li>Öffne <strong>Chrome</strong> und gehe auf die Seite.</li>
+        <li>Tippe auf die <strong>drei Punkte</strong> oben rechts.</li>
+        <li>Wähle <strong>„Zum Startbildschirm hinzufügen"</strong>.</li>
+        <li>Tippe auf <strong>„Hinzufügen"</strong> – fertig! 🎉</li>
+      </ol>
+    </div>
+    <p class="byline">Made by Kilian Disch U2a</p>
+  </div>
+</div>
+
+<footer>
+  <a href="#">Missbrauch melden</a> · <a href="#">Seitendetails</a>
+  <br><br>Twin Towers Hub · Made by Kilian Disch U2a
+</footer>
+
 <script>
-// ─── Constants ───────────────────────────────────────────
-const MODES = {
-  focus: { label:"Fokus",       duration:25*60, color:"#c9956a", rgb:"201,149,106" },
-  short: { label:"Kurze Pause", duration: 5*60, color:"#6aada6", rgb:"106,173,166" },
-  long:  { label:"Lange Pause", duration:15*60, color:"#7a86c9", rgb:"122,134,201" },
-};
-const C = 2*Math.PI*120;
-const STAGES = [
-  { name:"Samenkorn",   sessions:0  },
-  { name:"Keimling",    sessions:1  },
-  { name:"Jungbaum",    sessions:3  },
-  { name:"Heranwachsend", sessions:6 },
-  { name:"Reifer Bonsai", sessions:10 },
-  { name:"Meister-Bonsai",sessions:20 },
-];
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav a[id^="nav-"]').forEach(a => a.classList.remove('active'));
+    const page = document.getElementById('page-' + name);
+    if (page) page.classList.add('active');
+    const nav = document.getElementById('nav-' + name);
+    if (nav) nav.classList.add('active');
+    window.scrollTo(0, 0);
+  }
 
-// ─── State ───────────────────────────────────────────────
-let mode="focus", timeLeft=25*60, running=false, sessions=0, totalMinutes=0, interval=null, tasks=[];
-let isLight = false;
-let currentSlide = 0;
-let touchStartX = 0;
+  const ferienDate = new Date('2026-04-20T00:00:00');
+  function pad(n) { return String(n).padStart(2, '0'); }
 
-// ─── DOM refs ─────────────────────────────────────────────
-const $=id=>document.getElementById(id);
-const ringProgress=$("ring-progress"), ringGlow=$("ring-glow");
-const timeDisplay=$("time-display"), sessionCount=$("session-count");
-const modeTitle=$("mode-title"), startBtn=$("start-btn"), resetBtn=$("reset-btn");
-const taskInput=$("task-input"), addBtn=$("add-btn"), taskList=$("task-list");
-const sessionDots=$("session-dots"), ringContainer=$("ring-container");
-const sliderTrack=$("slider-track"), themeBtn=$("theme-btn"), backBtn=$("back-btn");
-const bonsaiCanvas=$("bonsai-canvas");
-const ctx=bonsaiCanvas.getContext("2d");
-
-// ─── Init ring ───────────────────────────────────────────
-[ringProgress,ringGlow].forEach(el=>{
-  el.setAttribute("stroke-dasharray",C);
-  el.setAttribute("stroke-dashoffset",0);
-});
-
-function pad(n){return String(n).padStart(2,"0");}
-function setColor(c,rgb){
-  document.documentElement.style.setProperty("--c",c);
-  document.documentElement.style.setProperty("--c-rgb",rgb);
-}
-
-// ─── Ring update ─────────────────────────────────────────
-function updateRing(){
-  const offset = C*(timeLeft/MODES[mode].duration);
-  ringProgress.style.strokeDashoffset = offset;
-  ringGlow.style.strokeDashoffset = offset;
-  timeDisplay.textContent = `${pad(Math.floor(timeLeft/60))}:${pad(timeLeft%60)}`;
-}
-
-// ─── Mode switch ─────────────────────────────────────────
-function switchMode(m){
-  mode=m; timeLeft=MODES[m].duration; running=false;
-  clearInterval(interval); startBtn.textContent="Start";
-  ringContainer.classList.remove("running");
-  // restore pill shape
-  document.documentElement.style.setProperty("--btn-radius","100px");
-  startBtn.style.borderRadius="";
-  startBtn.style.background="";
-  startBtn.style.boxShadow="";
-  startBtn.style.color="";
-  startBtn.style.borderColor="";
-  modeTitle.textContent=MODES[m].label;
-  setColor(MODES[m].color,MODES[m].rgb);
-  document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));
-  updateRing();
-}
-
-// ─── Tick ────────────────────────────────────────────────
-function tick(){
-  if(timeLeft<=0){
-    clearInterval(interval); running=false;
-    startBtn.textContent="Start";
-    ringContainer.classList.remove("running");
-    // restore button
-    startBtn.style.borderRadius="";
-    startBtn.style.background="";
-    startBtn.style.boxShadow="";
-    startBtn.style.color="";
-    startBtn.style.borderColor="";
-    if(mode==="focus"){
-      sessions++;
-      totalMinutes+=25;
-      sessionCount.textContent=`${sessions} session${sessions!==1?"s":""}`;
-      updateSessionDots();
-      updateBonsai();
+  function updateCountdown() {
+    const now = new Date();
+    const diff = ferienDate - now;
+    if (diff <= 0) {
+      ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => document.getElementById(id).textContent = '🎉');
+      return;
     }
-    timeDisplay.style.color=MODES[mode].color;
-    setTimeout(()=>{ timeDisplay.style.color=""; },800);
-    return;
-  }
-  timeLeft--;
-  if(mode==="focus") totalMinutes+=1/60;
-  updateRing();
-}
-
-// ─── Start button (with square-ish state) ────────────────
-startBtn.addEventListener("click",()=>{
-  running=!running;
-  if(running){
-    interval=setInterval(tick,1000);
-    startBtn.textContent="Pause";
-    ringContainer.classList.add("running");
-    // pill stays pill — square corners on active/running state via JS
-    startBtn.style.borderRadius="14px";
-    startBtn.style.background="linear-gradient(145deg,rgba(var(--c-rgb),0.95),rgba(var(--c-rgb),0.7))";
-  } else {
-    clearInterval(interval);
-    startBtn.textContent="Start";
-    ringContainer.classList.remove("running");
-    startBtn.style.borderRadius="";
-    startBtn.style.background="";
-    startBtn.style.boxShadow="";
-    startBtn.style.color="";
-    startBtn.style.borderColor="";
-  }
-});
-
-resetBtn.addEventListener("click",()=>{
-  clearInterval(interval); running=false; startBtn.textContent="Start";
-  ringContainer.classList.remove("running");
-  startBtn.style.borderRadius="";
-  startBtn.style.background="";
-  startBtn.style.boxShadow="";
-  startBtn.style.color="";
-  startBtn.style.borderColor="";
-  timeLeft=MODES[mode].duration; updateRing();
-});
-
-document.querySelectorAll(".mode-btn").forEach(btn=>btn.addEventListener("click",()=>switchMode(btn.dataset.mode)));
-
-// ─── Tasks ───────────────────────────────────────────────
-function renderTasks(){
-  taskList.innerHTML="";
-  if(!tasks.length){ taskList.innerHTML='<li class="empty-tasks">— noch keine Aufgaben —</li>'; return; }
-  tasks.forEach((task,i)=>{
-    const li=document.createElement("li"); li.className="task-item";
-    const check=document.createElement("div");
-    check.className="task-check"+(task.done?" checked":"");
-    check.addEventListener("click",()=>{ tasks[i].done=!tasks[i].done; renderTasks(); });
-    const text=document.createElement("span");
-    text.className="task-text"+(task.done?" done":""); text.textContent=task.text;
-    const del=document.createElement("button"); del.className="del-btn"; del.textContent="×";
-    del.addEventListener("click",()=>{
-      li.style.opacity="0"; li.style.transform="translateX(10px)";
-      setTimeout(()=>{ tasks.splice(i,1); renderTasks(); },230);
-    });
-    li.appendChild(check); li.appendChild(text); li.appendChild(del); taskList.appendChild(li);
-  });
-}
-function addTask(){
-  const val=taskInput.value.trim(); if(!val)return;
-  tasks.push({text:val,done:false}); taskInput.value=""; renderTasks();
-}
-addBtn.addEventListener("click",addTask);
-taskInput.addEventListener("keydown",e=>{ if(e.key==="Enter")addTask(); });
-
-// ─── Session dots ────────────────────────────────────────
-function updateSessionDots(){
-  sessionDots.innerHTML="";
-  for(let i=0;i<Math.min(sessions,8);i++){
-    const d=document.createElement("div"); d.className="session-dot";
-    d.style.animationDelay=`${i*0.07}s`; sessionDots.appendChild(d);
-  }
-}
-
-// ─── Theme toggle ────────────────────────────────────────
-themeBtn.addEventListener("click",()=>{
-  isLight=!isLight;
-  document.documentElement.classList.toggle("light",isLight);
-  themeBtn.textContent = isLight ? "☾" : "☀";
-  drawBonsai();
-});
-
-// ─── Slide / Swipe ───────────────────────────────────────
-function goToSlide(n){
-  currentSlide=n;
-  sliderTrack.classList.toggle("show-bonsai",n===1);
-  if(n===1) drawBonsai();
-}
-backBtn.addEventListener("click",()=>goToSlide(0));
-
-document.addEventListener("touchstart",e=>{ touchStartX=e.touches[0].clientX; },{passive:true});
-document.addEventListener("touchend",e=>{
-  const dx=e.changedTouches[0].clientX - touchStartX;
-  if(Math.abs(dx)>60){
-    if(dx<0 && currentSlide===0) goToSlide(1);
-    if(dx>0 && currentSlide===1) goToSlide(0);
-  }
-},{passive:true});
-
-// Also allow click on hint
-document.getElementById("swipe-hint").addEventListener("click",()=>goToSlide(currentSlide===0?1:0));
-
-// ─── BONSAI DRAWING ──────────────────────────────────────
-function resizeCanvas(){
-  const w=Math.min(380, bonsaiCanvas.parentElement.offsetWidth-40);
-  bonsaiCanvas.width=w*2; bonsaiCanvas.height=340*2;
-  bonsaiCanvas.style.width=w+"px"; bonsaiCanvas.style.height="340px";
-  ctx.scale(2,2);
-}
-
-function getStage(){
-  for(let i=STAGES.length-1;i>=0;i--){
-    if(sessions>=STAGES[i].sessions) return i;
-  }
-  return 0;
-}
-
-function drawBonsai(){
-  resizeCanvas();
-  const W=bonsaiCanvas.width/2, H=bonsaiCanvas.height/2;
-  ctx.clearRect(0,0,W,H);
-
-  const stage=getStage();
-  const dark=!isLight;
-  const accent=MODES[mode].color;
-
-  // Update stats
-  $("stat-sessions").textContent=sessions;
-  $("stat-minutes").textContent=Math.floor(totalMinutes);
-  $("stage-label").textContent=STAGES[stage].name;
-
-  // Ground
-  const grd=ctx.createLinearGradient(0,H-30,0,H);
-  grd.addColorStop(0,dark?"rgba(100,80,50,0.15)":"rgba(100,80,50,0.1)");
-  grd.addColorStop(1,"transparent");
-  ctx.fillStyle=grd;
-  ctx.beginPath();
-  ctx.ellipse(W/2,H-18,W*0.38,12,0,0,Math.PI*2);
-  ctx.fill();
-
-  // Pot
-  if(stage>=1) drawPot(W/2, H-18, stage, dark, accent);
-
-  // Tree
-  if(stage===0){
-    drawSeed(W/2, H-30, dark, accent);
-  } else {
-    ctx.save();
-    ctx.translate(W/2, H-36);
-    drawBranch(ctx, 0, 0, -Math.PI/2, Math.max(18,18+stage*12), stage, dark, accent, 0);
-    ctx.restore();
+    document.getElementById('cd-days').textContent  = Math.floor(diff / 86400000);
+    document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+    document.getElementById('cd-mins').textContent  = pad(Math.floor((diff % 3600000) / 60000));
+    document.getElementById('cd-secs').textContent  = pad(Math.floor((diff % 60000) / 1000));
   }
 
-  // Floating particles if high stage
-  if(stage>=4){
-    drawParticles(W, H, accent, stage);
-  }
-}
-
-function drawPot(x,y,stage,dark,accent){
-  const pw=14+stage*3; const ph=10+stage*2;
-  const g=ctx.createLinearGradient(x-pw,y,x+pw,y+ph);
-  g.addColorStop(0,dark?"#3a2e22":"#c4a882");
-  g.addColorStop(1,dark?"#2a1e14":"#a8855e");
-  ctx.fillStyle=g;
-  ctx.beginPath();
-  ctx.moveTo(x-pw,y); ctx.lineTo(x-pw+4,y+ph); ctx.lineTo(x+pw-4,y+ph); ctx.lineTo(x+pw,y);
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle=dark?"#4a3a2a":"#d4b890";
-  ctx.fillRect(x-pw-2,y-3,pw*2+4,5);
-}
-
-function drawBranch(ctx, x, y, angle, length, stage, dark, accent, depth){
-  if(length<3) return;
-  const maxDepth = Math.min(stage+1, 5);
-  if(depth>maxDepth) return;
-
-  const ex=x+Math.cos(angle)*length;
-  const ey=y+Math.sin(angle)*length;
-
-  const thick=Math.max(0.5,(maxDepth-depth+0.5)*1.2);
-  ctx.strokeStyle=dark
-    ? `rgba(100,70,40,${0.9-depth*0.08})`
-    : `rgba(80,50,25,${0.85-depth*0.07})`;
-  ctx.lineWidth=thick;
-  ctx.lineCap="round";
-  ctx.beginPath();
-  ctx.moveTo(x,y); ctx.lineTo(ex,ey); ctx.stroke();
-
-  if(depth===maxDepth || (stage>=2 && depth>=maxDepth-1)){
-    drawLeafCluster(ctx, ex, ey, length, stage, dark, accent, depth);
-    return;
-  }
-
-  const spread = 0.28+depth*0.06;
-  const shrink = 0.58+Math.random()*0.06;
-  const bend   = (Math.random()-0.5)*0.18;
-  drawBranch(ctx,ex,ey,angle-spread+bend,length*shrink,stage,dark,accent,depth+1);
-  drawBranch(ctx,ex,ey,angle+spread+bend,length*shrink,stage,dark,accent,depth+1);
-  if(stage>=3 && depth<maxDepth-1){
-    drawBranch(ctx,ex,ey,angle+(Math.random()-0.5)*0.4,length*shrink*0.7,stage,dark,accent,depth+2);
-  }
-}
-
-function drawLeafCluster(ctx, x, y, size, stage, dark, accent){
-  const r=Math.max(6,4+stage*2.5);
-  const count=3+stage;
-  for(let i=0;i<count;i++){
-    const ox=(Math.random()-0.5)*r*1.2;
-    const oy=(Math.random()-0.5)*r*1.2;
-    const lr=r*(0.45+Math.random()*0.55);
-    const hues=[
-      dark?"rgba(40,90,45,0.75)":"rgba(55,110,55,0.7)",
-      dark?"rgba(55,105,40,0.7)":"rgba(75,130,50,0.65)",
-      dark?"rgba(35,75,40,0.8)":"rgba(50,100,45,0.75)",
-      dark?"rgba(65,110,50,0.65)":"rgba(85,140,60,0.6)",
-    ];
-    ctx.fillStyle=hues[i%hues.length];
-    ctx.beginPath();
-    ctx.ellipse(x+ox,y+oy,lr,lr*0.8,Math.random()*Math.PI,0,Math.PI*2);
-    ctx.fill();
-  }
-  // accent blossom on high stage
-  if(stage>=4 && Math.random()>0.65){
-    ctx.fillStyle=accent+"aa";
-    ctx.beginPath();
-    ctx.arc(x+(Math.random()-0.5)*r, y+(Math.random()-0.5)*r, 2.2,0,Math.PI*2);
-    ctx.fill();
-  }
-}
-
-function drawSeed(x,y,dark,accent){
-  ctx.fillStyle=dark?"#5a4030":"#8a6040";
-  ctx.beginPath(); ctx.ellipse(x,y,5,7,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle=accent+"99";
-  ctx.beginPath(); ctx.arc(x,y-9,2.5,0,Math.PI*2); ctx.fill();
-}
-
-function drawParticles(W,H,accent,stage){
-  const count=4+stage;
-  for(let i=0;i<count;i++){
-    const px=W*0.25+Math.random()*W*0.5;
-    const py=H*0.15+Math.random()*H*0.55;
-    ctx.fillStyle=accent+(Math.random()>0.5?"66":"44");
-    ctx.beginPath(); ctx.arc(px,py,1.2+Math.random()*1.5,0,Math.PI*2); ctx.fill();
-  }
-}
-
-// ─── Init ────────────────────────────────────────────────
-setColor(MODES[mode].color,MODES[mode].rgb);
-updateRing();
-drawBonsai();
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 </script>
 </body>
 </html>
+Alles von <!DOCTYPE html> bis </html> kopieren und in GitHub einfügen – fertig! 🚀
